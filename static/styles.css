@@ -1,0 +1,69 @@
+:root {
+  --border-color: #808080;
+}
+
+html, body, * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+header  {
+  background-color: #494949;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-size: 3em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  max-width: 300px;
+  margin: 50vh auto 0 auto;
+  transform: translateY(-75%);
+}
+
+.grid-box {
+  border: 1px solid var(--border-color);
+  height: 60px;
+  width: 60px;
+}
+
+.right {
+  border-right: 2px solid var(--border-color);
+}
+
+.left {
+  border-left: 2px solid var(--border-color);
+}
+
+.top {
+  border-top: 2px solid var(--border-color);
+}
+
+.bottom {
+  border-bottom: 2px solid var(--border-color);
+}
+
+.occupied {
+  background-color: gray;
+}
+
+.roomba {
+  background-color: #b1ebc0;
+}
+
+/* Breakpoint for screensize less than 600 pixels */
+@media (max-width: 600px) {
+  .grid {
+   max-width: calc(10vw * 5);
+  }
+
+  .grid-box {
+    height: 10vw;
+    width: 10vw;
+  }
+}
+
