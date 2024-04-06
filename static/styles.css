@@ -1,5 +1,5 @@
 :root {
-  --border-color: #808080;
+  --border-color: #6b6b6b;
 }
 
 html, body, * {
@@ -48,11 +48,11 @@ header  {
 }
 
 .occupied {
-  background-color: gray;
+  background-color: #adadad;
 }
 
 .roomba {
-  background-color: #b1ebc0;
+  background-color: #dcda4f;
 }
 
 /* Breakpoint for screensize less than 600 pixels */
