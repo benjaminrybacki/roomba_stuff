@@ -1,5 +1,5 @@
 :root {
-  --border-color: #6b6b6b;
+  --border-color: #515151;
 }
 
 html, body, * {
@@ -17,18 +17,72 @@ header  {
   font-size: 3em;
 }
 
+.loading-overlay {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  padding: 2em;
+  font-size: 2em;
+  color: #494949;
+  border-radius: 10px;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
+
+}
+
+button {
+  border: none;
+  background-color: #494949;
+  color: white;
+  font-size: 1em;
+  padding: 1em;
+  border-radius: 10px;
+  margin: 1em auto;
+  display: block;
+  transition: all 0.1s ease-in-out;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: rgb(46, 174, 46);
+  transform: scale(1.08);
+}
+
+button:active {
+  transform: scale(1);
+  background-color: rgb(32, 113, 32);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  max-width: 300px;
-  margin: 50vh auto 0 auto;
-  transform: translateY(-75%);
+  max-width: calc(300px + 6em);
+  margin: 2em auto;
+  padding: 3em;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
 }
 
 .grid-box {
   border: 1px solid var(--border-color);
   height: 60px;
   width: 60px;
+}
+
+.grid-box:hover:not(.roomba):not(.occupied) {
+  background-color: #f0f0f0;
 }
 
 .right {
@@ -55,10 +109,28 @@ header  {
   background-color: #dcda4f;
 }
 
+.roomba:hover {
+  cursor: grab;
+}
+
+.roomba:active {
+  cursor: grabbing;
+}
+
+.roomba.dragging {
+  opacity: 0.5;
+}
+
+.instructions {
+  text-align: center;
+  margin: 2em auto;
+  max-width: calc(300px + 6em);
+}
+
 /* Breakpoint for screensize less than 600 pixels */
 @media (max-width: 600px) {
-  .grid {
-   max-width: calc(10vw * 5);
+  .grid, .instructions{
+   max-width: calc(calc(10vw * 5) + 6em);
   }
 
   .grid-box {
