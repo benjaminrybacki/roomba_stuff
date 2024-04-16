@@ -15,6 +15,8 @@ header  {
   padding: 10px;
   text-align: center;
   font-size: 3em;
+  position: fixed;
+  width: 100%;
 }
 
 .loading-overlay {
@@ -25,6 +27,10 @@ header  {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+.loading-overlay.hidden {
+  display: none;
 }
 
 .loading {
@@ -52,6 +58,9 @@ button {
   display: block;
   transition: all 0.1s ease-in-out;
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
+  height: 60px;
+  width: 75%;
+  max-width: 300px;
 }
 
 button:hover {
@@ -65,11 +74,32 @@ button:active {
   background-color: rgb(32, 113, 32);
 }
 
+.wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+}
+
+.content-grid-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1000px;
+  /* position items in the center of the cells */
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
+}
+
 .grid {
+  /* make this take up two rows in grid */
+  grid-row: 1 / span 2;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   max-width: calc(300px + 6em);
-  margin: 2em auto;
+  margin: 0 auto;
+  padding: 0 1em;
   padding: 3em;
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
   border-radius: 10px;
@@ -79,10 +109,25 @@ button:active {
   border: 1px solid var(--border-color);
   height: 60px;
   width: 60px;
+  transition: background-color 0.1s ease-in-out;
 }
 
 .grid-box:hover:not(.roomba):not(.occupied) {
   background-color: #f0f0f0;
+}
+
+.grid-box.path {
+  /* create an animation to transition background color from light red to dark red */
+  animation: path 1.5s forwards alternate;
+}
+
+@keyframes path {
+  0% {
+    background-color: #ffcccc;
+  }
+  100% {
+    background-color: #ff6666;
+  }
 }
 
 .right {
@@ -122,20 +167,33 @@ button:active {
 }
 
 .instructions {
-  text-align: center;
-  margin: 2em auto;
   max-width: calc(300px + 6em);
+  margin: 0 1em;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
+  justify-self: center;
 }
 
-/* Breakpoint for screensize less than 600 pixels */
+/* Breakpoint for screen size less than 600 pixels */
 @media (max-width: 600px) {
   .grid, .instructions{
    max-width: calc(calc(10vw * 5) + 6em);
+   text-align: center;
+  }
+
+  .instructions, button, .grid {
+    margin: 1em auto;
   }
 
   .grid-box {
     height: 10vw;
     width: 10vw;
+  }
+
+  .content-grid-wrapper {
+    grid-template-columns: 1fr;
+    margin-top: 2em;
   }
 }
 

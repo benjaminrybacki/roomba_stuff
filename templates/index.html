@@ -2,59 +2,63 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
+  <!-- meta tag with device width set -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Roomba Routes</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <script type="text/javascript" src="{{ url_for('static', filename='script.js')}}" defer></script>
 </head>
 
 <body>
   <header>Roomba Routes</header>
-  {% if loading %}
-  <div class="loading-overlay">
+  <div class="loading-overlay hidden">
     <div class="loading">
       Calculating path
     </div>
   </div>
-  {% endif %}
+  <div class="wrap">
+    <div class="content-grid-wrapper">
 
-  <div class="grid">
-    <div class="grid-box top left"></div>
-    <div class="grid-box top"></div>
-    <div class="grid-box top occupied"></div>
-    <div class="grid-box top"></div>
-    <div class="grid-box right top"></div>
+      <div class="grid">
+        <div class="grid-box top left"></div>
+        <div class="grid-box top"></div>
+        <div class="grid-box top occupied"></div>
+        <div class="grid-box top"></div>
+        <div class="grid-box right top"></div>
 
-    <div class="grid-box left"></div>
-    <div class="grid-box"></div>
-    <div class="grid-box"></div>
-    <div class="grid-box"></div>
-    <div class="grid-box right"></div>
+        <div class="grid-box left"></div>
+        <div class="grid-box"></div>
+        <div class="grid-box"></div>
+        <div class="grid-box"></div>
+        <div class="grid-box right"></div>
 
-    <div class="grid-box left"></div>
-    <div class="grid-box"></div>
-    <div class="grid-box occupied"></div>
-    <div class="grid-box"></div>
-    <div class="grid-box right"></div>
+        <div class="grid-box left"></div>
+        <div class="grid-box"></div>
+        <div class="grid-box occupied"></div>
+        <div class="grid-box"></div>
+        <div class="grid-box right"></div>
 
-    <div class="grid-box left"></div>
-    <div class="grid-box"></div>
-    <div class="grid-box"></div>
-    <div class="grid-box occupied"></div>
-    <div class="grid-box right"></div>
+        <div class="grid-box left"></div>
+        <div class="grid-box"></div>
+        <div class="grid-box"></div>
+        <div class="grid-box occupied"></div>
+        <div class="grid-box right"></div>
 
-    <div class="grid-box left bottom"></div>
-    <div class="grid-box bottom"></div>
-    <div class="grid-box bottom"></div>
-    <div class="grid-box bottom"></div>
-    <div id="roomba" class="grid-box right bottom roomba"></div>
+        <div class="grid-box left bottom"></div>
+        <div class="grid-box bottom"></div>
+        <div class="grid-box bottom"></div>
+        <div class="grid-box bottom"></div>
+        <div id="roomba" class="grid-box right bottom roomba"></div>
+      </div>
+      <button class="calculate" onClick="calculatePath();">Calculate Path</button>
+      <div class="instructions">
+        Drag and drop the roomba (in yellow) to move it around!
+        <br>
+        Click or drag your mouse over the grid boxes to mark them as occupied.
+      </div>
+    </div>
   </div>
-  <button class="calculate" onClick="calculatePath();">Calculate Path</button>
-  <div class="instructions">
-    Drag and drop the roomba (in yellow) to move it around!
-    <br>
-    Click or drag your mouse over the grid boxes to mark them as occupied.
-  </div>
+  <script type="text/javascript" src="{{ url_for('static', filename='script.js')}}"></script>
+
 </body>
 
 </html>
