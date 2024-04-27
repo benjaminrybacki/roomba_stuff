@@ -1,5 +1,7 @@
 :root {
   --border-color: #515151;
+  --padding-left: 0px;
+  --grid-width: calc(420px + 6em);
 }
 
 html, body, * {
@@ -9,7 +11,7 @@ html, body, * {
   font-family: Arial, sans-serif;
 }
 
-header  {
+header {
   background-color: #494949;
   color: white;
   padding: 10px;
@@ -47,29 +49,32 @@ header  {
 
 }
 
-button {
-  border: none;
-  background-color: #494949;
-  color: white;
-  font-size: 1em;
-  padding: 1em;
-  border-radius: 10px;
-  margin: 1em auto;
-  display: block;
-  transition: all 0.1s ease-in-out;
-  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
+button.calculate {
   height: 60px;
   width: 75%;
   max-width: 300px;
+  font-size: 1em;
 }
 
-button:hover {
+button.calculate, button.resize {
+  border: none;
+  background-color: #494949;
+  color: white;
+  padding: 1em;
+  border-radius: 10px;
+  margin: 0 auto;
+  display: block;
+  transition: all 0.1s ease-in-out;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+button.calculate:hover, button.resize:hover {
   cursor: pointer;
   background-color: rgb(46, 174, 46);
   transform: scale(1.08);
 }
 
-button:active {
+button.calculate:active, button.resize:active {
   transform: scale(1);
   background-color: rgb(32, 113, 32);
 }
@@ -93,11 +98,11 @@ button:active {
 }
 
 .grid {
-  /* make this take up two rows in grid */
-  grid-row: 1 / span 2;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  max-width: calc(300px + 6em);
+  /* make this take up three rows in grid */
+  grid-row: 1 / span 3;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--grid-width);
   margin: 0 auto;
   padding: 0 1em;
   padding: 3em;
@@ -105,11 +110,28 @@ button:active {
   border-radius: 10px;
 }
 
-.grid-box {
-  border: 1px solid var(--border-color);
+.flex-row-container, .flex-row-container-button {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.flex-row-container {
+  padding-left: var(--padding-left);
+}
+
+.flex-row-container-button {
+  padding-left: calc(60px + var(--padding-left));
+}
+
+.grid-box, button.add-box {
   height: 60px;
   width: 60px;
   transition: background-color 0.1s ease-in-out;
+}
+
+.grid-box {
+  border: 1px solid var(--border-color);
 }
 
 .grid-box:hover:not(.roomba):not(.occupied) {
@@ -125,6 +147,7 @@ button:active {
   0% {
     background-color: #ffcccc;
   }
+
   100% {
     background-color: #ff6666;
   }
@@ -166,6 +189,20 @@ button:active {
   opacity: 0.5;
 }
 
+button.add-box {
+  font-size: 1.2em;
+  cursor: pointer;
+  background-color: #f4f4f4;
+  border: solid 1px #afafaf;
+  user-select: none;
+  transition: color .2s ease-in-out, background-color .2s ease-in-out, font-size .2s ease-in-out;
+}
+
+button.add-box:hover {
+  background-color: #797979;
+  color: white;
+}
+
 .instructions {
   max-width: calc(300px + 6em);
   margin: 0 1em;
@@ -175,11 +212,50 @@ button:active {
   justify-self: center;
 }
 
+.grid-size-selector {
+  
+  margin: 1em 0;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  
+  width: calc(300px + 6em);
+  justify-self: center;
+}
+
+.flex-size-container {
+  display: flex;
+  padding: 1em 2em 1em 3em;
+}
+
+.flex-label-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: left;
+}
+
+.rows, .cols {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+.error-message {
+  color: rgb(215, 57, 57);
+  font-size: .8em;
+  margin-bottom: .5em;
+  text-align: center;
+}
+
 /* Breakpoint for screen size less than 600 pixels */
 @media (max-width: 600px) {
-  .grid, .instructions{
-   max-width: calc(calc(10vw * 5) + 6em);
-   text-align: center;
+  .grid, .instructions {
+    max-width: calc(calc(10vw * 5) + 6em);
+    text-align: center;
   }
 
   .instructions, button, .grid {
@@ -196,4 +272,3 @@ button:active {
     margin-top: 2em;
   }
 }
-

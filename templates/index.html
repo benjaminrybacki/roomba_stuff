@@ -19,42 +19,102 @@
     <div class="content-grid-wrapper">
 
       <div class="grid">
-        <div class="grid-box top left"></div>
-        <div class="grid-box top"></div>
-        <div class="grid-box top occupied"></div>
-        <div class="grid-box top"></div>
-        <div class="grid-box right top"></div>
+        <!-- <div class="flex-row-container-button">
+          <button class="add-box add-top" onclick="addTop(0)">+</button>
+          <button class="add-box add-top" onclick="addTop(1)">+</button>
+          <button class="add-box add-top" onclick="addTop(2)">+</button>
+          <button class="add-box add-top" onclick="addTop(3)">+</button>
+          <button class="add-box add-top" onclick="addTop(4)">+</button>
+        </div> -->
 
-        <div class="grid-box left"></div>
-        <div class="grid-box"></div>
-        <div class="grid-box"></div>
-        <div class="grid-box"></div>
-        <div class="grid-box right"></div>
+        <div class="flex-row-container">
+          <!-- <button class="add-box add-left" onclick="addLeft(0)">+</button> -->
 
-        <div class="grid-box left"></div>
-        <div class="grid-box"></div>
-        <div class="grid-box occupied"></div>
-        <div class="grid-box"></div>
-        <div class="grid-box right"></div>
+          <div class="grid-box top left roomba"></div>
+          <div class="grid-box top"></div>
+          <div class="grid-box top occupied"></div>
+          <div class="grid-box top"></div>
+          <div class="grid-box right top"></div>
+          <!-- <button class="add-box add-right" onclick="addRight(0)">+</button> -->
+        </div>
 
-        <div class="grid-box left"></div>
-        <div class="grid-box"></div>
-        <div class="grid-box"></div>
-        <div class="grid-box occupied"></div>
-        <div class="grid-box right"></div>
+        <div class="flex-row-container">
+          <!-- <button class="add-box add-left" onclick="addLeft(1)">+</button> -->
+          <div class="grid-box left"></div>
+          <div class="grid-box"></div>
+          <div class="grid-box"></div>
+          <div class="grid-box"></div>
+          <div class="grid-box right"></div>
+          <!-- <button class="add-box add-right" onclick="addRight(1)">+</button> -->
+        </div>
 
-        <div class="grid-box left bottom"></div>
-        <div class="grid-box bottom"></div>
-        <div class="grid-box bottom"></div>
-        <div class="grid-box bottom"></div>
-        <div id="roomba" class="grid-box right bottom roomba"></div>
+        <div class="flex-row-container">
+          <!-- <button class="add-box add-left" onclick="addLeft(2)">+</button> -->
+          <div class="grid-box left"></div>
+          <div class="grid-box"></div>
+          <div class="grid-box occupied"></div>
+          <div class="grid-box"></div>
+          <div class="grid-box right"></div>
+          <!-- <button class="add-box add-right" onclick="addRight(2)">+</button> -->
+        </div>
+
+        <div class="flex-row-container">
+          <!-- <button class="add-box add-left" onclick="addLeft(3)">+</button> -->
+          <div class="grid-box left"></div>
+          <div class="grid-box"></div>
+          <div class="grid-box"></div>
+          <div class="grid-box occupied"></div>
+          <div class="grid-box right"></div>
+          <!-- <button class="add-box add-right" onclick="addRight(3)">+</button> -->
+        </div>
+
+        <div class="flex-row-container">
+          <!-- <button class="add-box add-left" onclick="addLeft(4)">+</button> -->
+          <div class="grid-box left bottom"></div>
+          <div class="grid-box bottom"></div>
+          <div class="grid-box bottom"></div>
+          <div class="grid-box bottom"></div>
+          <div id="roomba" class="grid-box right bottom"></div>
+          <!-- <button class="add-box add-right" onclick="addRight(4)">+</button> -->
+        </div>
+
+        <!-- <div class="flex-row-container-button">
+          <button class="add-box add-bottom" onclick="addBottom(0)">+</button>
+          <button class="add-box add-bottom" onclick="addBottom(1)">+</button>
+          <button class="add-box add-bottom" onclick="addBottom(2)">+</button>
+          <button class="add-box add-bottom" onclick="addBottom(3)">+</button>
+          <button class="add-box add-bottom" onclick="addBottom(4)">+</button>
+        </div> -->
+
       </div>
-      <button class="calculate" onClick="calculatePath();">Calculate Path</button>
+
       <div class="instructions">
         Drag and drop the roomba (in yellow) to move it around!
         <br>
         Click or drag your mouse over the grid boxes to mark them as occupied.
       </div>
+
+      <div class="grid-size-selector">
+        <div class="flex-size-container">
+
+          <div class="flex-label-container">
+            <div class="rows">
+              <label for="grid-rows">Rows:</label>
+              <input type="number" id="grid-rows" name="grid-rows" min="1" max="10" value="5">
+            </div>
+            <div class="cols">
+              <label for="grid-cols">Columns:</label>
+              <input type="number" id="grid-cols" name="grid-cols" min="1" max="10" value="5">
+            </div>
+          </div>
+          <button class="resize" onClick="resizeGrid();">Resize Grid</button>
+        </div>
+        <p class="error-message hidden">!! Rows and Columns must be between 1 and 10.</p>
+      </div>
+
+      <button class="calculate" onClick="calculatePath();">Calculate Path</button>
+
+
     </div>
   </div>
   <script type="text/javascript" src="{{ url_for('static', filename='script.js')}}"></script>
