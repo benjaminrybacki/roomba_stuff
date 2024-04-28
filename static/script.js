@@ -121,7 +121,7 @@ function resizeGrid() {
       box.addEventListener('dragover', (e) => {
         boxDraggedOver(e, box);
       });
-    
+
       box.addEventListener('dragleave', (e) => {
         boxDragLeave(e, box);
       });
@@ -162,17 +162,19 @@ function resizeGrid() {
     // adjust the box sizes so that they correspond to the ratio
     // 5x5 column = 60px squares, 10x10 column = 30px squares
     let boxSize = 300 / squareSize;
-    let gridBoxes = document.querySelectorAll('.grid-box');
-    gridBoxes.forEach((box) => {
-      box.style.width = `${boxSize}px`;
-      box.style.height = `${boxSize}px`;
-    });
+    document.documentElement.style.setProperty('--box-size', `${boxSize}px`);
   }
 
 }
 
 // a function that sends a 2d array representation of the grid to the flask server
 function calculatePath() {
+  // remove all path elements
+  let pathElements = document.querySelectorAll('.path');
+  pathElements.forEach((path) => {
+    path.remove();
+  });
+
   // show loading spinner while waiting for response
   let spinner = document.querySelector('.loading-overlay');
   spinner.classList.remove('hidden');
@@ -211,23 +213,68 @@ function calculatePath() {
     // get path
     fetch('/path', { method: "GET" }).then((response) => {
       response.json().then((data) => {
-        console.log(data)
         let path = data['path'];
-        console.log(path)
+
+        let gridRows = [...document.querySelectorAll('.flex-row-container')];
 
         path.forEach((coord, i) => {
-          console.log(coord, i)
-          let row = coord[0];
+          if(i == path.length - 1) {
+            return;
+          }
+          let row = gridRows[coord[0]];
           let col = coord[1];
-          let index = row * 5 + col;
-          // add a delay for each box in the path
-          setTimeout(() => {
-            gridBoxes[index].classList.add('path');
-          }, 200 * i);
+          let box = row.children[col];
+
+          drawPath(path, i, box, coord)
         });
       });
     });
   });
+}
+
+function drawPath(path, i, box, coord) {
+  // create a new div for the path
+  let pathLine = document.createElement('div');
+  let col = coord[1];
+  pathLine.style.position = 'absolute';
+  document.querySelector('.grid').appendChild(pathLine);
+  pathLine.classList.add('path', 'hidden');
+  if (path[i + 1]) {
+    let nextRow = path[i + 1][0];
+    let nextCol = path[i + 1][1];
+
+    // determine if the path is up, down, left, or right
+    let horizontalDirection = col - nextCol;
+    let verticalDirection = coord[0] - nextRow;
+
+    // put path element in the center of the box
+    pathLine.style.left = `${box.offsetLeft + box.offsetWidth / 2}px`;
+    pathLine.style.top = `${box.offsetTop + box.offsetHeight / 2}px`;
+
+    // set a delay for each box in the path
+    setTimeout(() => {
+      pathLine.classList.remove('hidden')
+      // if growing left, add class 'grow-left', etc.
+      if (horizontalDirection > 0) {
+        // growing left
+        pathLine.classList.add('grow-left');
+      } else if (horizontalDirection < 0) {
+        // growing right
+        pathLine.classList.add('grow-right');
+      } else if (verticalDirection > 0) {
+        // growing up
+        pathLine.classList.add('grow-up');
+      } else if (verticalDirection < 0) {
+        // growing down
+        pathLine.classList.add('grow-down');
+      }
+    }, 750 * i);
+  }
+  
+  // OLD PATH DRAWING CODE  
+  // setTimeout(() => {
+  //   row.children[col].classList.add('path');
+  // }, 200 * i);
 }
 
 
