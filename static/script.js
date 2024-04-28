@@ -9,6 +9,9 @@ gridBoxes = document.querySelectorAll('.grid-box');
 rowInput = document.getElementById('grid-rows');
 colInput = document.getElementById('grid-cols');
 
+let roomba = document.querySelector('.roomba');
+
+
 // adding event listeners for walls for each grid box
 gridBoxes.forEach((box) => {
   box.addEventListener('click', (e) => {
@@ -21,7 +24,214 @@ gridBoxes.forEach((box) => {
       e.target.classList.toggle('occupied');
     }
   });
+
+  if (box.classList.contains('roomba')) {
+    box.draggable = true;
+  }
+
+  // drag and drop events for roomba
+  box.addEventListener('dragover', (e) => {
+    boxDraggedOver(e, box);
+  });
+
+  box.addEventListener('dragleave', (e) => {
+    boxDragLeave(e, box);
+  });
 });
+
+function boxDraggedOver(e, box) {
+  e.preventDefault();
+  const roomba = document.querySelector('.roomba');
+  if (!box.classList.contains('occupied')) {
+    box.classList.add('roomba');
+    box.classList.add('dragging');
+    box.draggable = true;
+  }
+}
+
+function boxDragLeave(e, box) {
+  e.preventDefault();
+  box.classList.remove('roomba');
+  box.classList.remove('dragging');
+  box.draggable = false;
+}
+
+roomba.addEventListener('dragstart', (e) => {
+  roomba.classList.add('dragging');
+});
+
+roomba.addEventListener('dragend', roombaDragEnd);
+
+function roombaDragEnd() {
+  let newRoomba = document.querySelector('.roomba');
+  console.log(newRoomba)
+  if (newRoomba) {
+    console.log('here');
+    roomba.classList.remove('roomba');
+    roomba.draggable = false;
+    newRoomba.classList.remove('dragging');
+    newRoomba.addEventListener('dragstart', () => {
+      newRoomba.classList.add('dragging');
+    });
+    roomba = newRoomba;
+    roomba.classList.remove('dragging');
+    roomba.addEventListener('dragend', roombaDragEnd);
+  } else {
+    roomba.classList.add('roomba');
+    roomba.draggable = true;
+    roomba.classList.remove('dragging');
+  }
+}
+
+function resizeGrid() {
+  let rows = rowInput.value;
+  let cols = colInput.value;
+
+  if (rows < 1 || cols < 1 || rows > 10 || cols > 10) {
+    document.querySelector('.error-message').classList.remove('hidden');
+    return;
+  } else {
+    document.querySelector('.error-message').classList.add('hidden');
+  }
+
+  let squareSize = Math.max(rows, cols);
+
+  // build out rows
+  let grid = document.querySelector('.grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < squareSize; i++) {
+    let row = document.createElement('div');
+    row.classList.add('flex-row-container');
+    for (let j = 0; j < squareSize; j++) {
+      let box = document.createElement('div');
+
+      // adding event listeners for walls for each box
+      box.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('roomba'))
+          e.target.classList.toggle('occupied');
+      });
+
+      box.addEventListener('mouseover', (e) => {
+        if (e.buttons === 1 && !e.target.classList.contains('roomba')) {
+          e.target.classList.toggle('occupied');
+        }
+      });
+
+      // drag and drop events for roomba
+      box.addEventListener('dragover', (e) => {
+        boxDraggedOver(e, box);
+      });
+    
+      box.addEventListener('dragleave', (e) => {
+        boxDragLeave(e, box);
+      });
+
+      // add classes to the box
+      box.classList.add('grid-box');
+      if (i == 0) {
+        box.classList.add('top');
+      }
+      if (i == squareSize - 1) {
+        box.classList.add('bottom');
+      }
+      if (j == 0) {
+        box.classList.add('left');
+      }
+      if (j == squareSize - 1) {
+        box.classList.add('right');
+      }
+      // add roomba to (0,0) by default
+      if (i == 0 && j == 0) {
+        box.classList.add('roomba');
+        box.draggable = true;
+        roomba = box;
+        roomba.addEventListener('dragstart', () => {
+          roomba.classList.add('dragging');
+        });
+        roomba.addEventListener('dragend', roombaDragEnd);
+      }
+
+      // add "walls" for boxes outside of the grid bounds
+      if (i > rows - 1 || j > cols - 1) {
+        box.classList.add('occupied');
+      }
+      row.appendChild(box);
+    }
+    grid.appendChild(row);
+
+    // adjust the box sizes so that they correspond to the ratio
+    // 5x5 column = 60px squares, 10x10 column = 30px squares
+    let boxSize = 300 / squareSize;
+    let gridBoxes = document.querySelectorAll('.grid-box');
+    gridBoxes.forEach((box) => {
+      box.style.width = `${boxSize}px`;
+      box.style.height = `${boxSize}px`;
+    });
+  }
+
+}
+
+// a function that sends a 2d array representation of the grid to the flask server
+function calculatePath() {
+  // show loading spinner while waiting for response
+  let spinner = document.querySelector('.loading-overlay');
+  spinner.classList.remove('hidden');
+
+  // disable the calculate path button
+  let calculatePathButton = document.querySelector('.calculate');
+  calculatePathButton.disabled = true;
+
+  let grid = [];
+  let gridRows = document.querySelectorAll('.flex-row-container');
+  gridRows.forEach((row) => {
+    let rowArray = [];
+    let children = [...row.children];
+    children.forEach((box) => {
+      if (box.classList.contains('roomba')) {
+        rowArray.push('0');
+      } else if (box.classList.contains('occupied')) {
+        rowArray.push('-1');
+      } else {
+        rowArray.push('1');
+      }
+    });
+    grid.push(rowArray);
+  });
+
+
+  fetch('/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ grid: grid })
+  }).then(() => {
+    spinner.classList.add('hidden');
+    calculatePathButton.disabled = false;
+    // get path
+    fetch('/path', { method: "GET" }).then((response) => {
+      response.json().then((data) => {
+        console.log(data)
+        let path = data['path'];
+        console.log(path)
+
+        path.forEach((coord, i) => {
+          console.log(coord, i)
+          let row = coord[0];
+          let col = coord[1];
+          let index = row * 5 + col;
+          // add a delay for each box in the path
+          setTimeout(() => {
+            gridBoxes[index].classList.add('path');
+          }, 200 * i);
+        });
+      });
+    });
+  });
+}
+
+
+// RIP. Code graveyard for a diff approach.
 
 // add-left function to add a grid box to the left of the grid
 // function addLeft(index) {
@@ -107,157 +317,3 @@ gridBoxes.forEach((box) => {
 //   gridWidth = longestRow * 60;
 //   document.documentElement.style.setProperty('--grid-width', `calc(${gridWidth}px + 6em)`);
 // }
-
-
-// a function that sends a 2d array representation of the grid to the flask server
-function calculatePath() {
-  // show loading spinner while waiting for response
-  let spinner = document.querySelector('.loading-overlay');
-  spinner.classList.remove('hidden');
-
-  // disable the calculate path button
-  let calculatePathButton = document.querySelector('.calculate');
-  calculatePathButton.disabled = true;
-
-  let grid = [];
-  let gridRows = document.querySelectorAll('.flex-row-container');
-  gridRows.forEach((row) => {
-    let rowArray = [];
-    let children = [...row.children];
-    children.forEach((box) => {
-      if (box.classList.contains('roomba')) {
-        rowArray.push('2');
-      } else if (box.classList.contains('occupied')) {
-        rowArray.push('-1');
-      } else {
-        rowArray.push('1');
-      }
-    });
-    grid.push(rowArray);
-  });
-
-
-  fetch('/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ grid: grid })
-  }).then(() => {
-    spinner.classList.add('hidden');
-    calculatePathButton.disabled = false;
-    // get path
-    fetch('/path', { method: "GET" }).then((response) => {
-      response.json().then((data) => {
-        console.log(data)
-        let path = data['path'];
-        console.log(path)
-
-        path.forEach((coord, i) => {
-          console.log(coord, i)
-          let row = coord[0];
-          let col = coord[1];
-          let index = row * 5 + col;
-          // add a delay for each box in the path
-          setTimeout(() => {
-            gridBoxes[index].classList.add('path');
-          }, 200 * i);
-        });
-      });
-    });
-  });
-}
-
-// TODO: Fix the drag and drop functionality
-// Make sure roomba can be dropped anywhere on the grid
-// show roomba being dragged
-let roomba = document.getElementById('roomba');
-console.log(roomba)
-
-roomba.addEventListener('dragstart', (e) => {
-  e.preventDefault();
-  console.log('dragging');
-  roomba.classList.add('dragging');
-});
-
-roomba.addEventListener('drop', (e) => {
-  e.preventDefault();
-  console.log(e)
-  if (e.target.classList.contains('grid-box')
-    && !e.target.classList.contains('roomba')
-    && !e.target.classList.contains('occupied')) {
-    roomba.classList.remove('roomba');
-    e.target.classList.add('roomba');
-    roomba = e.target;
-  }
-});
-
-function resizeGrid() {
-  let rows = rowInput.value;
-  let cols = colInput.value;
-
-  if (rows < 1 || cols < 1 || rows > 10 || cols > 10) {
-    document.querySelector('.error-message').classList.remove('hidden');
-    return;
-  } else {
-    document.querySelector('.error-message').classList.add('hidden');
-  }
-
-  let squareSize = Math.max(rows, cols);
-
-  // build out rows
-  let grid = document.querySelector('.grid');
-  grid.innerHTML = '';
-  for (let i = 0; i < squareSize; i++) {
-    let row = document.createElement('div');
-    row.classList.add('flex-row-container');
-    for (let j = 0; j < squareSize; j++) {
-      let box = document.createElement('div');
-
-      // adding event listeners for walls for each box
-      box.addEventListener('click', (e) => {
-        if (!e.target.classList.contains('roomba'))
-          e.target.classList.toggle('occupied');
-      });
-
-      box.addEventListener('mouseover', (e) => {
-        if (e.buttons === 1 && !e.target.classList.contains('roomba')) {
-          e.target.classList.toggle('occupied');
-        }
-      });
-
-      box.classList.add('grid-box');
-      if (i == 0) {
-        box.classList.add('top');
-      }
-      if (i == squareSize - 1) {
-        box.classList.add('bottom');
-      }
-      if (j == 0) {
-        box.classList.add('left');
-      }
-      if (j == squareSize - 1) {
-        box.classList.add('right');
-      }
-      if (i == 0 && j == 0) {
-        box.classList.add('roomba');
-      }
-
-      if (i > rows - 1 || j > cols - 1) {
-        box.classList.add('occupied');
-      }
-      row.appendChild(box);
-    }
-    grid.appendChild(row);
-
-    // adjust the box sizes so that they correspond to the ratio
-    // 5x5 column = 60px squares, 10x10 column = 30px squares
-    let boxSize = 300 / squareSize;
-    let gridBoxes = document.querySelectorAll('.grid-box');
-    gridBoxes.forEach((box) => {
-      box.style.width = `${boxSize}px`;
-      box.style.height = `${boxSize}px`;
-    });
-  }
-
-}

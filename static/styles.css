@@ -189,7 +189,7 @@ button.calculate:active, button.resize:active {
   opacity: 0.5;
 }
 
-button.add-box {
+/* button.add-box {
   font-size: 1.2em;
   cursor: pointer;
   background-color: #f4f4f4;
@@ -201,7 +201,7 @@ button.add-box {
 button.add-box:hover {
   background-color: #797979;
   color: white;
-}
+} */
 
 .instructions {
   max-width: calc(300px + 6em);
