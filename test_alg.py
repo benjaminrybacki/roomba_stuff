@@ -1,9 +1,14 @@
 #Main class to test code
 def main():
 
+    #Define size of array
+    global ROWS, COLS
+    ROWS = 8
+    COLS = 10
+
     #Primary array: -1 -> wall, 0 -> clean, 1 -> unclean
     global arr
-    arr = [[1 for i in range(5)] for j in range(5)]
+    arr = [[1 for i in range(COLS)] for j in range(ROWS)]
 
     #Initialize room size for cell checking
     global RIGHT_BOUND, BOTTOM_BOUND
@@ -11,63 +16,87 @@ def main():
     BOTTOM_BOUND = len(arr)
     
     #Initialize roomba position and clean initial square
-    global roomba_row, roomba_col, start_row, start_col
-    roomba_row, start_row = 2, 2
-    roomba_col, start_col = 2, 2
+    global roomba_row, roomba_col, ORIGIN_ROW, ORIGIN_COL
+    roomba_row, ORIGIN_ROW = 1, 1
+    roomba_col, ORIGIN_COL = 7, 7
     clean()
 
     #Initialize distance-from-origin array with zeros
     global dis_arr
-    dis_arr = [[0 for i in range(5)] for j in range(5)]
+    dis_arr = [[0 for i in range(COLS)] for j in range(ROWS)]
     populateDistanceArray()
 
     #Initalize path of roomba
     global path
     path = []
-    #testPath = [[3,2],[4,2]]
 
     #Show array start
     printCleaned()
 
     #Run algorithm
-    algorithm(start_row, start_col)
+    algorithm()
 
-    #Move roomba along path
-    #for move in testPath:
-        #moveTo(move[0], move[1])
+    #Show array end
+    printCleaned()
 
-    #Show cleaned after movement
-    #printCleaned()
-
+    #Show the overall path of the alg
     print(path)
     
 #Algorithm to move the roomba until the room is cleaned
-def algorithm(start_row, start_col):
+def algorithm():
     #Do bestAdjacent - if [-1, -1] is returned, find nearestDirty and go, otherwise if no dirty, go to start position
-    for i in range(23):
+    for i in range(2*len(arr)*len(arr[0])): #In case of infinite loop, will automatically exit loop after a point
         next_move = bestAdjacent(roomba_row, roomba_col)
         if(next_move != [-1, -1]): #If there are adjacent dirty cells, pick best one and go to it
             moveTo(next_move[0], next_move[1])
         else: #If there are no adjacent dirty cells, scan array for nearest dirty cell
             nearest_dirty = nearestDirty()
             if(nearest_dirty != [-1, -1]): #If a dirty cell exists somewhere in the array, go to it
-                goTo(nearest_dirty[0], nearest_dirty[1])
+                path_to_node = goTo(nearest_dirty[0], nearest_dirty[1]) #Find path to dirty cell
+                if(path_to_node != [-1, -1]):
+                    for move in path_to_node:
+                        moveTo(move[0], move[1])
+                else:
+                    break #If there is an unreachable dirty square, return to origin anyway
+
             else: #If there are no dirty cells in the array, go to origin
-                goTo(start_row, start_col)
-        printCleaned()
+                break
 
+        #Show step by step path of roomba as alg progresses
+        #printCleaned()
 
-#TODO
+    #Once all the cells are cleaned
+    goTo(ORIGIN_ROW, ORIGIN_COL)
+
 #Return the nearest unclean square to the roomba at (roomba_row, roomba_col). Returns [-1, -1] if everything is clean
 def nearestDirty():
-    print("to dirty square")
-    #Will be difficult to account for walls if it get stuck in a room
+    #Find all dirty nodes throughout the square
+    all_dirty = []
+
+    #Find closest cell and track its radial distance from current cell
+    nearest_dirty = [-1, -1]
+    dirty_distance = 1000
+
+    #Find all dirty cells remaining
+    for row in range(ROWS):
+        for col in range(COLS):
+            if arr[row][col] == 1:
+                all_dirty.append([row, col])
+
+    #For all dirty cells remaining, find the closest radially to the roomba
+    for dirty in all_dirty:
+        if(max(abs(roomba_row - dirty[0]),abs(roomba_col - dirty[1]))) < dirty_distance:
+            dirty_distance = max(abs(roomba_row - dirty[0]),abs(roomba_col - dirty[1]))
+            nearest_dirty = [dirty[0], dirty[1]]
+        
+    #Return closest dirty cell; if there were no dirty cells, returns [-1, -1]
+    return nearest_dirty
 
 #TODO
 #Return the path to a square (row,col) if everyting else is clean - can be starting spot or elsewere
 def goTo(row, col):
     #Figure out how to avoid walls
-    print("go to (row,col)")
+    print(f"go to ({row},{col})")
     
 #Return the best adjacent node to the current node at (row, col), if none, returns [-1, -1]
 def bestAdjacent(row, col):
@@ -160,11 +189,11 @@ def adjacentDirtyCount(row, col):
 
 #Print the boolean array of clean/dirty squares
 def printCleaned():
-    for row in range(5):
-        for col in range(5):
+    for row in range(ROWS):
+        for col in range(COLS):
             if (row == roomba_row) and (col == roomba_col):
                 print("X", end=" ")
-            elif (row == start_row) and (col == start_col):
+            elif (row == ORIGIN_ROW) and (col == ORIGIN_COL):
                 print("O",end=" ")
             else:
                 if(arr[row][col] == 1):
@@ -192,14 +221,14 @@ def clean():
 #Populate the initial distance array
 def populateDistanceArray():
     global roomba_col, roomba_row, dis_arr
-    for row in range(5):
-        for col in range(5):
+    for row in range(ROWS):
+        for col in range(COLS):
             dis_arr[row][col] = max(abs(roomba_col - col), abs(roomba_row - row))  #Radial Distance from starting square
 
 #Print the radial distance of all cells relative to the starting position
 def printDistance():
-    for row in range(5):
-        for col in range(5):
+    for row in range(ROWS):
+        for col in range(COLS):
             if (arr[row][col] == -1):
                 print("X", end=" ")
             else:
