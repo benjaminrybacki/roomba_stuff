@@ -3,6 +3,7 @@
   --padding-left: 0px;
   --grid-width: calc(420px + 6em);
   --box-size: 60px;
+  --diagonal-box-size: 84.85px;
 }
 
 html, body, * {
@@ -128,8 +129,10 @@ button.calculate:active, button.resize:active {
 
 .grid-box {
   border: 1px solid var(--border-color);
-  height: var(--box-size); /* 60px, changes with grid size */
-  width:  var(--box-size); /* 60px, changes with grid size */
+  height: var(--box-size);
+  /* 60px, changes with grid size */
+  width: var(--box-size);
+  /* 60px, changes with grid size */
   transition: background-color 0.1s ease-in-out;
 }
 
@@ -177,6 +180,26 @@ button.calculate:active, button.resize:active {
   animation: grow-down linear .75s forwards;
 }
 
+.path.grow-up-left {
+  animation: grow-up-left linear .75s forwards;
+  background: linear-gradient(45deg, transparent 46.9%, red 47%, red 53%, transparent 53.1%);
+}
+
+.path.grow-up-right {
+  animation: grow-up-right linear .75s forwards;
+  background: linear-gradient(-45deg, transparent 46.9%, red 47%, red 53%, transparent 53.1%);
+}
+
+.path.grow-down-left {
+  animation: grow-down-left linear .75s forwards;
+  background: linear-gradient(135deg, transparent 46.9%, red 47%, red 53%, transparent 53.1%);
+}
+
+.path.grow-down-right {
+  animation: grow-down-right linear .75s forwards;
+  background: linear-gradient(45deg, transparent 46.9%, red 47%, red 53%, transparent 53.1%);
+}
+
 @keyframes grow-right {
   0% {
     width: 1px;
@@ -189,27 +212,27 @@ button.calculate:active, button.resize:active {
 
 @keyframes grow-left {
   0% {
-     /* End position */
-
     width: 1px;
   }
 
   100% {
-    transform: translateX(calc(-1 * var(--box-size))); /* Start position */
-
     width: var(--box-size);
+    transform: translateX(calc(-1 * var(--box-size)));
+    /* End position */
   }
 }
 
 @keyframes grow-up {
   0% {
     height: 1px;
-    transform: translateY(0); /* Start position */
+    transform: translateY(0);
+    /* Start position */
   }
 
   100% {
     height: var(--box-size);
-    transform: translateY(calc(-1 * var(--box-size))); /* End position */
+    transform: translateY(calc(-1 * var(--box-size)));
+    /* End position */
   }
 }
 
@@ -220,6 +243,58 @@ button.calculate:active, button.resize:active {
 
   100% {
     height: var(--box-size);
+  }
+}
+
+@keyframes grow-up-left {
+  0% {
+    height: 1px;
+    width: 1px;
+    transform: translate(0, 0);
+  }
+
+  100% {
+    height: var(--box-size);
+    width: var(--box-size);
+    transform: translate(calc(-1 * var(--box-size)), calc(-1 * var(--box-size)));
+  }
+}
+
+@keyframes grow-up-right {
+  0% {
+    height: 1px;
+    width: 1px;
+  }
+
+  100% {
+    height: var(--box-size);
+    width: var(--box-size);
+    transform: translateY(calc(-1 * var(--box-size)));
+  }
+}
+
+@keyframes grow-down-left {
+  0% {
+    height: 1px;
+    width: 1px;
+  }
+
+  100% {
+    height: var(--box-size);
+    width: var(--box-size);
+    transform: translateX(calc(-1 * var(--box-size)));
+  }
+}
+
+@keyframes grow-down-right {
+  0% {
+    height: 1px;
+    width: 1px;
+  }
+
+  100% {
+    height: var(--box-size);
+    width: var(--box-size);
   }
 }
 
@@ -287,11 +362,11 @@ button.add-box:hover {
 }
 
 .grid-size-selector {
-  
+
   margin: 1em 0;
   box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.5);
   border-radius: 10px;
-  
+
   width: calc(300px + 6em);
   justify-self: center;
 }

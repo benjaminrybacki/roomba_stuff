@@ -162,6 +162,8 @@ function resizeGrid() {
     // adjust the box sizes so that they correspond to the ratio
     // 5x5 column = 60px squares, 10x10 column = 30px squares
     let boxSize = 300 / squareSize;
+    let diagnonalboxSize = Math.sqrt(2) * boxSize;
+    document.documentElement.style.setProperty('--diagonal-box-size', `${diagnonalboxSize}px`);
     document.documentElement.style.setProperty('--box-size', `${boxSize}px`);
   }
 
@@ -255,16 +257,35 @@ function drawPath(path, i, box, coord) {
     setTimeout(() => {
       pathLine.classList.remove('hidden')
       // if growing left, add class 'grow-left', etc.
-      if (horizontalDirection > 0) {
+      if(horizontalDirection == 1 && verticalDirection == 1) { 
+        // up and left
+        pathLine.classList.add('grow-up-left');
+      }
+      else if(horizontalDirection == 1 && verticalDirection == -1) {
+        // down and left
+        pathLine.classList.add('grow-down-left');
+      }
+      else if(horizontalDirection == -1 && verticalDirection == 1) {
+        // up and right
+        pathLine.classList.add('grow-up-right');
+      }
+      else if(horizontalDirection == -1 && verticalDirection == -1) {
+        // down and right
+        pathLine.classList.add('grow-down-right');
+      } 
+      else if (horizontalDirection > 0) {
         // growing left
         pathLine.classList.add('grow-left');
-      } else if (horizontalDirection < 0) {
+      } 
+      else if (horizontalDirection < 0) {
         // growing right
         pathLine.classList.add('grow-right');
-      } else if (verticalDirection > 0) {
+      } 
+      else if (verticalDirection > 0) {
         // growing up
         pathLine.classList.add('grow-up');
-      } else if (verticalDirection < 0) {
+      } 
+      else if (verticalDirection < 0) {
         // growing down
         pathLine.classList.add('grow-down');
       }
