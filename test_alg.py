@@ -15,11 +15,10 @@ def getPath(array):
     ORIGIN_ROW = origin[0]
     ORIGIN_COL = origin[1]
 
-    #Initialize roomba and clean origin
+    #Initialize roomba at origin
     global roomba_row, roomba_col
     roomba_row = ORIGIN_ROW
     roomba_col = ORIGIN_COL
-    clean()
 
     #Initialize distance-from-origin array with zeros
     global dis_arr
@@ -34,7 +33,9 @@ def getPath(array):
     algorithm()
 
     #Show the overall path of the alg
-    print(path)
+    #print(path)
+
+    return path
     
 #Algorithm to move the roomba until the room is cleaned
 def algorithm():
@@ -57,7 +58,7 @@ def algorithm():
                 break
 
         #Show step by step path of roomba as alg progresses
-        printCleaned()
+        #printCleaned()
 
     #Once all the cells are cleaned
     goTo(ORIGIN_ROW, ORIGIN_COL)
@@ -239,7 +240,7 @@ def findOrigin():
     for r in range(ROWS):
         for c in range(COLS):
             #If value is roomba value, that is origin
-            if arr[r][c] == 2:
+            if arr[r][c] == 0:
                 return [r, c]
     
     return [-1, -1]
@@ -423,7 +424,4 @@ def node_already_seen(new_pos, open_list, closed_list):
             return node, "open"
           
     return None, "Node not seen"
-
-testArray = [[1, 1, 1], [1, 2, 1], [1, 1, 1]]
-getPath(testArray)
 
