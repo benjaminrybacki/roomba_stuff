@@ -16,7 +16,7 @@ class Node:
         self.children.append(child)
         return child
 
-def Calculate_Path(start_pos, end_pos, arrRows, arrCols):
+def Calculate_Path(start_pos, end_pos):
     #
     # Description:
     # This function creates a tree structure from the 
@@ -61,13 +61,12 @@ def Calculate_Path(start_pos, end_pos, arrRows, arrCols):
         # Loop through adjacent cells
         for new_pos in adj:
 
-            # Ensure only positions in array are returned
-            if new_pos[0] > arrRows or new_pos[1] > arrCols:
-                continue
-
             # Find & return path if goal position found
             if new_pos == end_pos:          
-                path = path_to_parent(current_node)
+                # Create new child and then find path
+                child = current_node.add_child(new_pos)
+                child.parent = current_node
+                path = path_to_parent(child)
                 return path  
 
             # Determine if node has been previously processed
@@ -118,12 +117,16 @@ def path_to_parent(current_node):
     # Limitations: None
 
     #Initialize path
+    reverse_path = []
     path = []
 
-    #Add node to path until root node is reached
+    #Add node to path until root node is reached - opposite order of travel
     while current_node:
-        path.append(current_node.position)
+        reverse_path.append(current_node.position)
         current_node = current_node.parent
+
+    #The actual path is the reverse of the 
+    path = reverse_path[::-1]
 
     #Return path from current node desired node
     return path
@@ -175,11 +178,11 @@ def node_already_seen(new_pos, open_list, closed_list):
     return None, "Node not seen"
 
 # Testing
-path_to_node = Calculate_Path(start_pos = [0,0], end_pos = [4,4], arrRows=5, arrCols=5)
+path_to_node = Calculate_Path(start_pos = [0,0], end_pos = [4,4])
 print("path_to_node: " + str(path_to_node))
-path_to_node = Calculate_Path(start_pos = [0,0], end_pos = [0,4], arrRows=5, arrCols=5)
+path_to_node = Calculate_Path(start_pos = [0,0], end_pos = [0,4])
 print("path_to_node: " + str(path_to_node))
-path_to_node = Calculate_Path(start_pos = [0,0], end_pos = [3,2], arrRows=5, arrCols=5)
+path_to_node = Calculate_Path(start_pos = [0,0], end_pos = [3,2])
 print("path_to_node: " + str(path_to_node))
-path_to_node = Calculate_Path(start_pos = [2,2], end_pos = [5,2], arrRows=5, arrCols=5)
+path_to_node = Calculate_Path(start_pos = [2,2], end_pos = [5,2])
 print("path_to_node: " + str(path_to_node))
