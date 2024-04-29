@@ -47,13 +47,7 @@ def algorithm():
         else: #If there are no adjacent dirty cells, scan array for nearest dirty cell
             nearest_dirty = nearestDirty()
             if(nearest_dirty != [-1, -1]): #If a dirty cell exists somewhere in the array, go to it
-                path_to_node = goTo(nearest_dirty[0], nearest_dirty[1]) #Find path to dirty cell
-                if(path_to_node != [-1, -1]):
-                    for move in path_to_node:
-                        moveTo(move[0], move[1])
-                else:
-                    break #If there is an unreachable dirty square, return to origin anyway
-
+                goTo(nearest_dirty[0], nearest_dirty[1]) #Find path to dirty cell
             else: #If there are no dirty cells in the array, go to origin
                 break
 
@@ -92,6 +86,9 @@ def goTo(row, col):
     #Find path to goal node
     go_to_path = Calculate_Path([roomba_row, roomba_col], [row, col])
     
+    if go_to_path == [-1, -1]:
+        goTo(ORIGIN_ROW, ORIGIN_COL)
+
     #Make sequence of moves to go to goal node
     for move in go_to_path:
         moveTo(move[0], move[1])
@@ -345,8 +342,8 @@ def Calculate_Path(start_pos, end_pos):
                     open_list.append(previousNode)
 
 
-    #Return original position if goal is not found
-    return root.position
+    #Return [-1, -1] if a path cannot be found
+    return [-1, -1]
 
 def path_to_parent(current_node):
     #
