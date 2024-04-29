@@ -1,24 +1,24 @@
-#Main class to test code
-def main():
-
-    #Define size of array
-    global ROWS, COLS
-    ROWS = 4
-    COLS = 4
-
-    #Primary array: -1 -> wall, 0 -> clean, 1 -> unclean
+#Method that returns path to front end
+def getPath(array):
+    #Make array globally accessable
     global arr
-    arr = [[1 for i in range(COLS)] for j in range(ROWS)]
+    arr = array
 
-    #Initialize room size for cell checking
-    global RIGHT_BOUND, BOTTOM_BOUND
-    RIGHT_BOUND = len(arr[0])
-    BOTTOM_BOUND = len(arr)
-    
-    #Initialize roomba position and clean initial square
-    global roomba_row, roomba_col, ORIGIN_ROW, ORIGIN_COL
-    roomba_row, ORIGIN_ROW = 1, 1
-    roomba_col, ORIGIN_COL = 1, 1
+    #Retrieve size of array
+    global ROWS, COLS
+    ROWS = len(array)
+    COLS = len(array[0])
+
+    #Find origin based on input array
+    global ORIGIN_ROW, ORIGIN_COL
+    origin = findOrigin()
+    ORIGIN_ROW = origin[0]
+    ORIGIN_COL = origin[1]
+
+    #Initialize roomba and clean origin
+    global roomba_row, roomba_col
+    roomba_row = ORIGIN_ROW
+    roomba_col = ORIGIN_COL
     clean()
 
     #Initialize distance-from-origin array with zeros
@@ -30,19 +30,11 @@ def main():
     global path
     path = [[ORIGIN_ROW, ORIGIN_COL]]
 
-    #Show array start
-    printCleaned()
-
     #Run algorithm
     algorithm()
 
-    #Show array end
-    printCleaned()
-
     #Show the overall path of the alg
     print(path)
-
-    
     
 #Algorithm to move the roomba until the room is cleaned
 def algorithm():
@@ -65,7 +57,7 @@ def algorithm():
                 break
 
         #Show step by step path of roomba as alg progresses
-        #printCleaned()
+        printCleaned()
 
     #Once all the cells are cleaned
     goTo(ORIGIN_ROW, ORIGIN_COL)
@@ -102,7 +94,6 @@ def goTo(row, col):
     #Make sequence of moves to go to goal node
     for move in go_to_path:
         moveTo(move[0], move[1])
-    
     
 #Return the best adjacent node to the current node at (row, col), if none, returns [-1, -1]
 def bestAdjacent(row, col):
@@ -142,8 +133,8 @@ def adjacentCells(row, col):
     available = []
 
     #Range of neighboring cells to consider
-    col_range = range(max(0, col-1), min(col+2, RIGHT_BOUND))
-    row_range = range(max(0, row-1), min(row+2, BOTTOM_BOUND))
+    col_range = range(max(0, col-1), min(col+2, COLS))
+    row_range = range(max(0, row-1), min(row+2, ROWS))
 
     #Find all adjacent notes that are not walls
     for r in row_range:
@@ -161,8 +152,8 @@ def adjacentDirty(row, col):
     dirty = []
 
     #Range of neighboring cells to consider
-    col_range = range(max(0, col-1), min(col+2, RIGHT_BOUND))
-    row_range = range(max(0, row-1), min(row+2, BOTTOM_BOUND))
+    col_range = range(max(0, col-1), min(col+2, COLS))
+    row_range = range(max(0, row-1), min(row+2, ROWS))
 
     #Find all adjacent notes that are dirty
     for r in row_range:
@@ -177,8 +168,8 @@ def adjacentDirty(row, col):
 #Return the amount of dirty cells adjacent to the cell at [row, col]
 def adjacentDirtyCount(row, col):
     #Range of neighboring cells to consider
-    col_range = range(max(0, col-1), min(col+2, RIGHT_BOUND))
-    row_range = range(max(0, row-1), min(row+2, BOTTOM_BOUND))
+    col_range = range(max(0, col-1), min(col+2, COLS))
+    row_range = range(max(0, row-1), min(row+2, ROWS))
 
     #Initialize count of unclean adjacent squares
     dirty_count = 0
@@ -241,6 +232,17 @@ def printDistance():
                 print(dis_arr[row][col], end=" ")
         print()  # New line between rows
     print()  # Empty line to separate multiple boxes
+
+#Find roomba when array is first initialized
+def findOrigin():
+    #Iterate through neighboring cells
+    for r in range(ROWS):
+        for c in range(COLS):
+            #If value is roomba value, that is origin
+            if arr[r][c] == 2:
+                return [r, c]
+    
+    return [-1, -1]
 
 #John's code
 # Define Class for Tree Structure
@@ -370,6 +372,9 @@ def path_to_parent(current_node):
     #The actual path is the reverse of the 
     path = reverse_path[::-1]
 
+    #The first element is a duplicate
+    path.pop(0)
+
     #Return path from current node desired node
     return path
 
@@ -419,5 +424,6 @@ def node_already_seen(new_pos, open_list, closed_list):
           
     return None, "Node not seen"
 
-#Run main class
-main()
+testArray = [[1, 1, 1], [1, 2, 1], [1, 1, 1]]
+getPath(testArray)
+
