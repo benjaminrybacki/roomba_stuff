@@ -33,10 +33,10 @@ def getPath(array):
     algorithm()
 
     #Show the overall path of the alg
-    #print(path)
+    print(path)
 
     return path
-    
+
 #Algorithm to move the roomba until the room is cleaned
 def algorithm():
     #Do bestAdjacent - if [-1, -1] is returned, find nearestDirty and go, otherwise if no dirty, go to start position
@@ -87,11 +87,12 @@ def goTo(row, col):
     go_to_path = Calculate_Path([roomba_row, roomba_col], [row, col])
     
     if go_to_path == [-1, -1]:
-        goTo(ORIGIN_ROW, ORIGIN_COL)
-
-    #Make sequence of moves to go to goal node
-    for move in go_to_path:
-        moveTo(move[0], move[1])
+        arr[row][col] = 0
+        #goTo(ORIGIN_ROW, ORIGIN_COL)
+    else:
+        #Make sequence of moves to go to goal node
+        for move in go_to_path:
+            moveTo(move[0], move[1])
     
 #Return the best adjacent node to the current node at (row, col), if none, returns [-1, -1]
 def bestAdjacent(row, col):
@@ -130,9 +131,21 @@ def adjacentCells(row, col):
     #List of available cells to return
     available = []
 
+    #Get boundaries of search
+    left_bound = max(0, col-1)
+    right_bound = min(col+2, COLS)
+    top_bound = max(0, row-1)
+    bottom_bound = min(row+2, ROWS)
+
     #Range of neighboring cells to consider
-    col_range = range(max(0, col-1), min(col+2, COLS))
-    row_range = range(max(0, row-1), min(row+2, ROWS))
+    col_range = range(left_bound, right_bound)
+    row_range = range(top_bound, bottom_bound)
+
+    #Determine where walls are relative to roomba
+    wall_right = arr[row][right_bound-1] == -1
+    wall_above = arr[top_bound][col] == -1
+    wall_left = arr[row][left_bound] == -1
+    wall_below = arr[bottom_bound-1][col] == -1
 
     #Find all adjacent notes that are not walls
     for r in row_range:
@@ -140,6 +153,28 @@ def adjacentCells(row, col):
             #exclude current cell
             if r != row or c != col:
                 if (arr[r][c] != -1):
+                    #Next code is to avoid diagonal cut through walls
+                    #If top right of roomba
+                    if(r==top_bound and c==right_bound-1):
+                        if(wall_above and wall_right):
+                            continue
+
+                    #If top left of roomba
+                    if(r==top_bound and c==left_bound):
+                        if(wall_above and wall_left):
+                            continue
+
+                    #If bottom right of roomba
+                    if(r==bottom_bound-1 and c==right_bound-1):
+                        if(wall_below and wall_right):
+                            continue
+
+                    #If bottom left of roomba
+                    if(r==bottom_bound-1 and c==left_bound):
+                        if(wall_below and wall_left):
+                            continue
+                    
+                    #If all tests are passed, append to list
                     available.append([r, c])
 
     return available
@@ -149,9 +184,21 @@ def adjacentDirty(row, col):
     #List of dirty cells to return
     dirty = []
 
+    #Get boundaries of search
+    left_bound = max(0, col-1)
+    right_bound = min(col+2, COLS)
+    top_bound = max(0, row-1)
+    bottom_bound = min(row+2, ROWS)
+
     #Range of neighboring cells to consider
-    col_range = range(max(0, col-1), min(col+2, COLS))
-    row_range = range(max(0, row-1), min(row+2, ROWS))
+    col_range = range(left_bound, right_bound)
+    row_range = range(top_bound, bottom_bound)
+
+    #Determine where walls are relative to roomba
+    wall_right = arr[row][right_bound-1] == -1
+    wall_above = arr[top_bound][col] == -1
+    wall_left = arr[row][left_bound] == -1
+    wall_below = arr[bottom_bound-1][col] == -1
 
     #Find all adjacent notes that are dirty
     for r in row_range:
@@ -159,6 +206,27 @@ def adjacentDirty(row, col):
             #exclude current cell
             if r != row or c != col:
                 if (arr[r][c] == 1):
+                    #Next code is to avoid diagonal cut through walls
+                    #If top right of roomba
+                    if(r==top_bound and c==right_bound-1):
+                        if(wall_above and wall_right):
+                            continue
+
+                    #If top left of roomba
+                    if(r==top_bound and c==left_bound):
+                        if(wall_above and wall_left):
+                            continue
+
+                    #If bottom right of roomba
+                    if(r==bottom_bound-1 and c==right_bound-1):
+                        if(wall_below and wall_right):
+                            continue
+
+                    #If bottom left of roomba
+                    if(r==bottom_bound-1 and c==left_bound):
+                        if(wall_below and wall_left):
+                            continue
+                    
                     dirty.append([r, c])
 
     return dirty
@@ -246,7 +314,7 @@ def findOrigin():
 # Define Class for Tree Structure
 class Node:
     def __init__(self, position, parent=None):
-        self.position = position  # (x, y) tuple to represent the position on the grid
+        self.position = position  # [x, y] list to represent the position on the grid
         self.parent = parent
         self.children = []
         self.dist_to_end_pos = 2 ** 8
@@ -421,4 +489,3 @@ def node_already_seen(new_pos, open_list, closed_list):
             return node, "open"
           
     return None, "Node not seen"
-
