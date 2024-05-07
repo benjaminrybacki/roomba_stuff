@@ -20,6 +20,7 @@ cd roomba_stuff
 ```
 python app.py
 ```
+7. Open the link that the terminal outputs after running the command. At this point, you should be able to interact with the project on the web.
 
 ## Troubleshooting
 If at some point an issue persists from following the steps above, ensure that you are using commands specific to your operating system. The commands above will work with linux based machines.  
